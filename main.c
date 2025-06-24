@@ -6,7 +6,7 @@
 /*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 23:16:06 by vscode            #+#    #+#             */
-/*   Updated: 2025/06/24 14:07:11 by vscode           ###   ########.fr       */
+/*   Updated: 2025/06/24 16:45:13 by vscode           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,13 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+void	build_args(char *args[4], char *command)
+{
+	args[0] = "sh";
+	args[1] = "-c";
+	args[2] = command;
+	args[3] = NULL;
+}
 //  command: ./a.out file1 "grep a1" |  "wc -l" file2
 int	main(int argc, char **argv)
 {
@@ -26,10 +33,7 @@ int	main(int argc, char **argv)
 	int		status;
 	int		tmp_fd;
 
-		args[0] = "sh";
-		args[1] = "-c";
-		args[2] = argv[2];
-		args[3] = NULL;
+	build_args(args, argv[2]);
 	if (argc < 5)
 		return (1);
 	fd = open(argv[1], O_RDONLY);
