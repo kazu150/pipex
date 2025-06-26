@@ -6,17 +6,11 @@
 /*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 23:16:06 by vscode            #+#    #+#             */
-/*   Updated: 2025/06/26 18:31:22 by vscode           ###   ########.fr       */
+/*   Updated: 2025/06/26 18:44:56 by vscode           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
+#include "pipex.h"
 
 void	build_args(char *args[4], char *input_command)
 {
