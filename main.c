@@ -6,7 +6,7 @@
 /*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 23:16:06 by vscode            #+#    #+#             */
-/*   Updated: 2025/06/26 18:44:56 by vscode           ###   ########.fr       */
+/*   Updated: 2025/06/26 20:34:49 by vscode           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,6 @@ int	main(int argc, char **argv)
 	char	*args[4];
 	int		d_pipe[2];
 
-	pipe(d_pipe);
 	if (argc != 5)
 		return (1);
 	build_args(args, argv[2]);
@@ -92,6 +91,8 @@ int	main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	if (dup2(fd, STDIN_FILENO) == -1)
+		exit(EXIT_FAILURE);
+	if (pipe(d_pipe) == -1)
 		exit(EXIT_FAILURE);
 	pid = fork();
 	if (pid == -1)
