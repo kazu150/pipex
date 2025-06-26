@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 23:16:06 by vscode            #+#    #+#             */
-/*   Updated: 2025/06/24 17:30:06 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/06/26 15:17:07 by vscode           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ void	build_args(char *args[4], char *input_command)
 int	exec_output_child_process(char **args, char *output_command,
 		char *output_filename)
 {
-	int	status;
 	int	fd;
 	int	tmp_fd;
 
@@ -45,7 +44,8 @@ int	exec_output_child_process(char **args, char *output_command,
 	fd = dup2(fd, STDOUT_FILENO);
 	if (fd == -1)
 		return (1);
-	execve("/bin/sh", args, 0);
+	if (execve("/bin/sh", args, 0) == -1)
+		return (1);
 	return (0);
 }
 
@@ -53,7 +53,8 @@ int	exec_output_parent_process(pid_t pid)
 {
 	int	status;
 
-	waitpid(pid, &status, 0);
+	if (waitpid(pid, &status, 0) == -1)
+		return (1);
 	if (WIFEXITED(status))
 		unlink("./tmp");
 	return (0);
@@ -62,7 +63,6 @@ int	exec_output_parent_process(pid_t pid)
 int	exec_input_child_process(char **args)
 {
 	int	fd;
-	int	return_value;
 
 	fd = open("tmp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
@@ -70,11 +70,8 @@ int	exec_input_child_process(char **args)
 	fd = dup2(fd, STDOUT_FILENO);
 	if (fd == -1)
 		return (1);
-	return_value = execve("/bin/sh", args, 0);
-	if (return_value == -1)
-	{
+	if (execve("/bin/sh", args, 0) == -1)
 		return (1);
-	}
 	return (0);
 }
 
@@ -82,31 +79,29 @@ int	exec_input_parent_process(pid_t pid, char **args, char *output_command,
 		char *output_filename)
 {
 	int	status;
-	int	fd;
-	int	tmp_fd;
 
-	waitpid(pid, &status, 0);
+	if (waitpid(pid, &status, 0) == -1)
+		return (1);
 	if (WIFEXITED(status))
 	{
 		pid = fork();
 		if (pid < 0)
 			return (1);
 		if (pid == 0)
-			exec_output_child_process(args, output_command, output_filename);
+			return (exec_output_child_process(args, output_command,
+					output_filename));
 		else
-			exec_output_parent_process(pid);
+			return (exec_output_parent_process(pid));
 	}
 	return (0);
 }
 
-//  command: ./a.out file1 "grep a1" |  "wc -l" file2
+//  command: ./a.out file1 "grep a1" "wc -l" file2
 int	main(int argc, char **argv)
 {
 	int		fd;
 	pid_t	pid;
 	char	*args[4];
-	int		status;
-	int		tmp_fd;
 
 	if (argc != 5)
 		return (1);
@@ -121,8 +116,7 @@ int	main(int argc, char **argv)
 	if (pid == -1)
 		return (1);
 	if (pid == 0)
-		exec_input_child_process(args);
+		return (exec_input_child_process(args));
 	else
-		exec_input_parent_process(pid, args, argv[3], argv[4]);
-	return (0);
+		return (exec_input_parent_process(pid, args, argv[3], argv[4]));
 }
