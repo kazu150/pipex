@@ -6,7 +6,7 @@
 /*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 23:16:06 by vscode            #+#    #+#             */
-/*   Updated: 2025/06/26 20:34:49 by vscode           ###   ########.fr       */
+/*   Updated: 2025/06/26 20:42:49 by vscode           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ int	exec_output_c_process(char **args, char *output_command,
 		exit(EXIT_FAILURE);
 	if (dup2(fd, STDOUT_FILENO) == -1)
 		exit(EXIT_FAILURE);
+	close(fd);
 	if (execve("/bin/sh", args, 0) == -1)
 		exit(EXIT_FAILURE);
 	return (0);
@@ -94,11 +95,11 @@ int	main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	if (pipe(d_pipe) == -1)
 		exit(EXIT_FAILURE);
+	close(fd);
 	pid = fork();
 	if (pid == -1)
 		exit(EXIT_FAILURE);
 	if (pid == 0)
 		return (exec_input_c_process(args, d_pipe));
-	else
-		return (exec_input_p_process(pid, args, argv, d_pipe));
+	return (exec_input_p_process(pid, args, argv, d_pipe));
 }
