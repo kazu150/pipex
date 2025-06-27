@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 23:16:06 by vscode            #+#    #+#             */
-/*   Updated: 2025/06/26 20:42:49 by vscode           ###   ########.fr       */
+/*   Updated: 2025/06/27 17:53:39 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	build_args(char *args[4], char *input_command)
 	args[3] = NULL;
 }
 
-int	exec_output_c_process(char **args, char *output_command,
+int	output_child_process(char **args, char *output_command,
 		char *output_filename, int pipe_in)
 {
 	int	fd;
@@ -40,7 +40,7 @@ int	exec_output_c_process(char **args, char *output_command,
 	return (0);
 }
 
-int	exec_input_c_process(char **args, int d_pipe[2])
+int	input_child_process(char **args, int d_pipe[2])
 {
 	close(d_pipe[0]);
 	if (dup2(d_pipe[1], STDOUT_FILENO) == -1)
@@ -51,21 +51,23 @@ int	exec_input_c_process(char **args, int d_pipe[2])
 	return (0);
 }
 
-int	exec_input_p_process(pid_t pid, char **args, char **argv, int d_pipe[2])
+int	input_parent_process(pid_t pid, char **args, char **argv, int d_pipe[2])
 {
-	int	status;
+	int		status;
+	int		o_status;
+	pid_t	o_pid;
 
-	if (waitpid(pid, &status, 0) == -1)
+	close(d_pipe[1]);
+	o_pid = fork();
+	if (o_pid < 0)
 		exit(EXIT_FAILURE);
-	if (WIFEXITED(status))
+	if (o_pid == 0)
+		return (output_child_process(args, argv[3], argv[4], d_pipe[0]));
+	else
 	{
-		close(d_pipe[1]);
-		pid = fork();
-		if (pid < 0)
+		if (waitpid(pid, &status, 0) < 0 || waitpid(o_pid, &o_status, 0) < 0)
 			exit(EXIT_FAILURE);
-		if (pid == 0)
-			return (exec_output_c_process(args, argv[3], argv[4], d_pipe[0]));
-		else
+		if (WIFEXITED(status) && WIFEXITED(o_status))
 		{
 			close(d_pipe[0]);
 			return (0);
@@ -74,7 +76,7 @@ int	exec_input_p_process(pid_t pid, char **args, char **argv, int d_pipe[2])
 	return (0);
 }
 
-//  command: ./a.out file1 "grep a1" "wc -l" file2
+//  command: ./pipex infile "grep a1" "wc -l" outfile
 int	main(int argc, char **argv)
 {
 	int		fd;
@@ -100,6 +102,6 @@ int	main(int argc, char **argv)
 	if (pid == -1)
 		exit(EXIT_FAILURE);
 	if (pid == 0)
-		return (exec_input_c_process(args, d_pipe));
-	return (exec_input_p_process(pid, args, argv, d_pipe));
+		return (input_child_process(args, d_pipe));
+	return (input_parent_process(pid, args, argv, d_pipe));
 }
