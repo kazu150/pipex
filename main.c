@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 23:16:06 by vscode            #+#    #+#             */
-/*   Updated: 2025/06/27 17:53:39 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/06/27 18:21:56 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,12 @@ void	build_args(char *args[4], char *input_command)
 	args[3] = NULL;
 }
 
+void	error_exit(char *error_target)
+{
+	perror(error_target);
+	exit(EXIT_FAILURE);
+}
+
 int	output_child_process(char **args, char *output_command,
 		char *output_filename, int pipe_in)
 {
@@ -27,11 +33,14 @@ int	output_child_process(char **args, char *output_command,
 
 	args[2] = output_command;
 	if (dup2(pipe_in, STDIN_FILENO) == -1)
-		exit(EXIT_FAILURE);
+		error_exit("dup2");
 	close(pipe_in);
 	fd = open(output_filename, O_WRONLY | O_CREAT, 0644);
 	if (fd == -1)
+	{
+		perror(output_filename);
 		exit(EXIT_FAILURE);
+	}
 	if (dup2(fd, STDOUT_FILENO) == -1)
 		exit(EXIT_FAILURE);
 	close(fd);
