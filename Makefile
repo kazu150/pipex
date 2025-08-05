@@ -6,7 +6,7 @@
 #    By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/03 16:26:12 by kaisogai          #+#    #+#              #
-#    Updated: 2025/06/28 19:14:22 by kaisogai         ###   ########.fr        #
+#    Updated: 2025/08/04 17:50:41 by kaisogai         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,8 +27,6 @@ clean:
 
 fclean: clean
 	rm -f $(NAME)
-
-debug: CFLAGS += -g
 
 re: fclean all
 

@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 19:12:11 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/06/29 17:19:35 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/05 15:09:58 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ int	input_parent_process(pid_t pid, char **args, char **argv, int d_pipe[2])
 		if (WIFEXITED(status) && WIFEXITED(o_status))
 		{
 			close(d_pipe[0]);
-			return (0);
+			return (WEXITSTATUS(o_status));
 		}
 	}
 	return (0);
