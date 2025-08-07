@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 18:43:44 by vscode            #+#    #+#             */
-/*   Updated: 2025/08/07 14:58:27 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/07 15:48:13 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ int		input_child_process(char **args, char *input_filename, int d_pipe[2]);
 int		output_child_process(char **args, char *output_filename, int pipe_in);
 void	error_exit(char *error_target);
 char	**ft_split(const char *str, char c);
+void	free_split(char **args);
 char	*ft_strjoin(const char *str1, const char *str2);
 
 #endif
