@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 23:16:06 by vscode            #+#    #+#             */
-/*   Updated: 2025/08/05 19:30:04 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/05 20:17:36 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,10 @@ void	error_exit(char *error_target)
 int	main(int argc, char **argv)
 {
 	pid_t	pid;
-	char	*args[1000];
+	char	**args;
 	int		d_pipe[2];
 
+	args = NULL;
 	if (argc != 5)
 		return (1);
 	if (pipe(d_pipe) == -1)
@@ -34,12 +35,12 @@ int	main(int argc, char **argv)
 		error_exit(FORK);
 	if (pid == 0)
 	{
-		build_args(args, argv[2]);
+		args = ft_split(argv[2], ' ');
 		return (input_child_process(args, argv[1], d_pipe));
 	}
 	else
 	{
-		build_args(args, argv[3]);
+		args = ft_split(argv[3], ' ');
 		return (input_parent_process(pid, args, argv[4], d_pipe));
 	}
 }
