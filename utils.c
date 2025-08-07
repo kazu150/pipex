@@ -6,17 +6,15 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 19:12:11 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/07 15:49:20 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/07 16:55:35 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-char	*build_command_path(char *cmd)
+const char	**get_default_paths(void)
 {
-	char		*command_path;
-	int			i;
-	const char	*paths[6];
+	static const char	*paths[7];
 
 	paths[0] = "/usr/local/sbin/";
 	paths[1] = "/usr/local/bin/";
@@ -24,17 +22,34 @@ char	*build_command_path(char *cmd)
 	paths[3] = "/usr/bin/";
 	paths[4] = "/sbin/";
 	paths[5] = "/bin/";
+	paths[6] = NULL;
+	return (paths);
+}
+
+char	*build_command_path(char *cmd)
+{
+	char		*command_path;
+	int			i;
+	const char	**paths;
+	int			has_permission_error;
+
+	has_permission_error = 0;
+	paths = get_default_paths();
 	i = 0;
 	while (i < 6)
 	{
 		command_path = ft_strjoin(paths[i], cmd);
 		if (access(command_path, X_OK) == 0)
 			break ;
+		if (errno == EACCES)
+			has_permission_error = 1;
 		free(command_path);
 		i++;
 	}
-	if (i == 6)
-		error_exit(ACCESS);
+	if (i == 6 && has_permission_error)
+		(ft_printf(ft_strjoin(cmd, ": Permission denied\n")), exit(126));
+	if (i == 6 && !has_permission_error)
+		(ft_printf(ft_strjoin(cmd, ": command not found\n")), exit(127));
 	return (command_path);
 }
 
