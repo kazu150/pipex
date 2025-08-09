@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 19:12:11 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/09 15:18:42 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/09 17:24:45 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,25 +47,15 @@ const char	**get_default_paths(void)
 
 void	handle_command_path_error(char **args, int has_permission_error)
 {
-	char	*msg;
-
 	if (has_permission_error)
 	{
-		msg = ft_strjoin(args[0], ": Permission denied\n");
-		if (!msg)
-			error_exit(MALLOC);
-		ft_printf(msg);
-		free(msg);
+		ft_printf("%s: Permission denied\n", args[0]);
 		free_split(args);
 		exit(126);
 	}
 	else
 	{
-		msg = ft_strjoin(args[0], ": command not found\n");
-		if (!msg)
-			error_exit(MALLOC);
-		ft_printf(msg);
-		free(msg);
+		ft_printf("%s: command not found\n", args[0]);
 		free_split(args);
 		exit(127);
 	}

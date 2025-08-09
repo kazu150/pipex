@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/11 16:14:29 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/07 16:14:36 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/09 17:20:37 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ static int	print_result(const char *input, va_list ap)
 		}
 		else
 		{
-			ft_putchar_fd(input[i++], 1);
+			ft_putchar_fd(input[i++], 2);
 			letters_count++;
 		}
 	}
