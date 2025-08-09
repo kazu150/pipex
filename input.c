@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:18:46 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/09 15:18:52 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/09 16:20:26 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,11 @@ int	input_child_process(char **args, char *input_file, int d_pipe[2])
 	int		fd;
 	char	*cmd;
 
-	cmd = build_command_path(args);
 	close(d_pipe[0]);
 	fd = open(input_file, O_RDONLY);
 	if (fd == -1)
-		(free(cmd), free_split(args), error_exit(input_file));
+		(free_split(args), error_exit(input_file));
+	cmd = build_command_path(args);
 	if (dup2(fd, STDIN_FILENO) == -1)
 		(free(cmd), free_split(args), error_exit(DUP2));
 	close(fd);
