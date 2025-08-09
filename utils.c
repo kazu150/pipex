@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 19:12:11 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/09 17:24:45 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/09 20:54:19 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,17 @@ void	error_exit(char *error_target)
 	exit(EXIT_FAILURE);
 }
 
-const char	**get_default_paths(void)
+const char	**get_default_paths(char **envp)
 {
 	static const char	*paths[7];
+	int					i;
 
+	i = 0;
+	while (envp[i])
+	{
+		// TODO: ここをなおします
+		printf("%s\n", envp[i++]);
+	}
 	paths[0] = "/usr/local/sbin/";
 	paths[1] = "/usr/local/bin/";
 	paths[2] = "/usr/sbin/";
@@ -61,7 +68,7 @@ void	handle_command_path_error(char **args, int has_permission_error)
 	}
 }
 
-char	*build_command_path(char **args)
+char	*build_command_path(char **args, char **envp)
 {
 	char		*command_path;
 	int			i;
@@ -69,7 +76,7 @@ char	*build_command_path(char **args)
 	int			has_permission_error;
 
 	has_permission_error = 0;
-	paths = get_default_paths();
+	paths = get_default_paths(envp);
 	i = 0;
 	while (i < 6)
 	{

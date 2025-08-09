@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 18:43:44 by vscode            #+#    #+#             */
-/*   Updated: 2025/08/09 15:21:29 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/09 20:50:21 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,18 @@
 # define EXECVE "execve"
 # define MALLOC "malloc"
 
-int		output(pid_t pid, char **args, char *output_filename, int d_pipe[2]);
-int		input_child_process(char **args, char *input_filename, int d_pipe[2]);
-int		output_child_process(char **args, char *output_filename, int pipe_in);
+int		output(pid_t pid, char **args, char *output_filename, int d_pipe[2],
+			char **envp);
+int		input_child_process(char **args, char *input_filename, int d_pipe[2],
+			char **envp);
+int		output_child_process(char **args, char *output_filename, int pipe_in,
+			char **envp);
 void	error_exit(char *error_target);
 char	**ft_split(const char *str, char c);
 void	free_split(char **args);
 char	*ft_strjoin(const char *str1, const char *str2);
 void	handle_command_path_error(char **args, int has_permission_error);
-char	*build_command_path(char **args);
+char	*build_command_path(char **args, char **envp);
 
 // ft_printf
 int		ft_printf(const char *input, ...);

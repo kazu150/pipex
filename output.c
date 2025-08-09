@@ -6,13 +6,14 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:18:32 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/09 17:14:20 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/09 20:50:06 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-int	output_child_process(char **args, char *output_filename, int pipe_in)
+int	output_child_process(char **args, char *output_filename, int pipe_in,
+		char **envp)
 {
 	int			fd;
 	char		*cmd;
@@ -24,7 +25,7 @@ int	output_child_process(char **args, char *output_filename, int pipe_in)
 	fd = open(output_filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 		(free_split(args), error_exit(output_filename));
-	cmd = build_command_path(args);
+	cmd = build_command_path(args, envp);
 	if (dup2(fd, STDOUT_FILENO) == -1)
 		(free(cmd), free_split(args), error_exit(DUP2));
 	close(fd);
@@ -33,7 +34,8 @@ int	output_child_process(char **args, char *output_filename, int pipe_in)
 	return (0);
 }
 
-int	output(pid_t pid, char **args, char *output_filename, int d_pipe[2])
+int	output(pid_t pid, char **args, char *output_filename, int d_pipe[2],
+		char **envp)
 {
 	int		status;
 	int		o_status;
@@ -44,12 +46,12 @@ int	output(pid_t pid, char **args, char *output_filename, int d_pipe[2])
 	if (o_pid < 0)
 		(free_split(args), error_exit(FORK));
 	if (o_pid == 0)
-		return (output_child_process(args, output_filename, d_pipe[0]));
+		return (output_child_process(args, output_filename, d_pipe[0], envp));
 	else
 	{
-		free_split(args);
 		if (waitpid(pid, &status, 0) < 0 || waitpid(o_pid, &o_status, 0) < 0)
 			(free_split(args), error_exit(WAITPID));
+		free_split(args);
 		if (WIFEXITED(status) && WIFEXITED(o_status))
 		{
 			close(d_pipe[0]);

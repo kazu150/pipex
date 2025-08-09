@@ -6,14 +6,14 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 23:16:06 by vscode            #+#    #+#             */
-/*   Updated: 2025/08/09 15:21:46 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/09 20:46:25 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
 //  command: ./pipex infile "grep a1" "wc -l" outfile
-int	main(int argc, char **argv)
+int	main(int argc, char **argv, char **envp)
 {
 	pid_t	pid;
 	char	**args;
@@ -32,10 +32,10 @@ int	main(int argc, char **argv)
 		args = ft_split(argv[2], ' ');
 		if (!args)
 			error_exit(MALLOC);
-		return (input_child_process(args, argv[1], d_pipe));
+		return (input_child_process(args, argv[1], d_pipe, envp));
 	}
 	args = ft_split(argv[3], ' ');
 	if (!args)
 		error_exit(MALLOC);
-	return (output(pid, args, argv[4], d_pipe));
+	return (output(pid, args, argv[4], d_pipe, envp));
 }
