@@ -6,11 +6,30 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 19:12:11 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/07 16:55:35 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/09 15:18:42 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+void	free_split(char **args)
+{
+	int	i;
+
+	i = 0;
+	while (args[i])
+	{
+		free(args[i]);
+		i++;
+	}
+	free(args);
+}
+
+void	error_exit(char *error_target)
+{
+	perror(error_target);
+	exit(EXIT_FAILURE);
+}
 
 const char	**get_default_paths(void)
 {
@@ -26,7 +45,33 @@ const char	**get_default_paths(void)
 	return (paths);
 }
 
-char	*build_command_path(char *cmd)
+void	handle_command_path_error(char **args, int has_permission_error)
+{
+	char	*msg;
+
+	if (has_permission_error)
+	{
+		msg = ft_strjoin(args[0], ": Permission denied\n");
+		if (!msg)
+			error_exit(MALLOC);
+		ft_printf(msg);
+		free(msg);
+		free_split(args);
+		exit(126);
+	}
+	else
+	{
+		msg = ft_strjoin(args[0], ": command not found\n");
+		if (!msg)
+			error_exit(MALLOC);
+		ft_printf(msg);
+		free(msg);
+		free_split(args);
+		exit(127);
+	}
+}
+
+char	*build_command_path(char **args)
 {
 	char		*command_path;
 	int			i;
@@ -38,7 +83,9 @@ char	*build_command_path(char *cmd)
 	i = 0;
 	while (i < 6)
 	{
-		command_path = ft_strjoin(paths[i], cmd);
+		command_path = ft_strjoin(paths[i], args[0]);
+		if (!command_path)
+			error_exit(MALLOC);
 		if (access(command_path, X_OK) == 0)
 			break ;
 		if (errno == EACCES)
@@ -46,80 +93,7 @@ char	*build_command_path(char *cmd)
 		free(command_path);
 		i++;
 	}
-	if (i == 6 && has_permission_error)
-		(ft_printf(ft_strjoin(cmd, ": Permission denied\n")), exit(126));
-	if (i == 6 && !has_permission_error)
-		(ft_printf(ft_strjoin(cmd, ": command not found\n")), exit(127));
+	if (i == 6)
+		handle_command_path_error(args, has_permission_error);
 	return (command_path);
-}
-
-int	output_child_process(char **args, char *output_filename, int pipe_in)
-{
-	int		fd;
-	char	*cmd;
-
-	cmd = build_command_path(args[0]);
-	if (dup2(pipe_in, STDIN_FILENO) == -1)
-		(free(cmd), free_split(args), error_exit(DUP2));
-	close(pipe_in);
-	fd = open(output_filename, O_WRONLY | O_CREAT, 0644);
-	if (fd == -1)
-		(free(cmd), free_split(args), error_exit(output_filename));
-	if (dup2(fd, STDOUT_FILENO) == -1)
-		(free(cmd), free_split(args), error_exit(DUP2));
-	close(fd);
-	if (execve(cmd, args, 0) == -1)
-		(free(cmd), free_split(args), error_exit(EXECVE));
-	free_split(args);
-	return (0);
-}
-
-int	input_child_process(char **args, char *input_file, int d_pipe[2])
-{
-	int		fd;
-	char	*cmd;
-
-	cmd = build_command_path(args[0]);
-	close(d_pipe[0]);
-	fd = open(input_file, O_RDONLY);
-	if (fd == -1)
-		(free(cmd), free_split(args), error_exit(input_file));
-	if (dup2(fd, STDIN_FILENO) == -1)
-		(free(cmd), free_split(args), error_exit(DUP2));
-	close(fd);
-	if (dup2(d_pipe[1], STDOUT_FILENO) == -1)
-		(free(cmd), free_split(args), error_exit(DUP2));
-	close(d_pipe[1]);
-	if (execve(cmd, args, 0) == -1)
-		(free(cmd), free_split(args), error_exit(EXECVE));
-	else
-		free_split(args);
-	return (0);
-}
-
-int	input_parent_process(pid_t pid, char **args, char *output_filename,
-		int d_pipe[2])
-{
-	int		status;
-	int		o_status;
-	pid_t	o_pid;
-
-	close(d_pipe[1]);
-	o_pid = fork();
-	if (o_pid < 0)
-		(free_split(args), error_exit(FORK));
-	if (o_pid == 0)
-		return (output_child_process(args, output_filename, d_pipe[0]));
-	else
-	{
-		free_split(args);
-		if (waitpid(pid, &status, 0) < 0 || waitpid(o_pid, &o_status, 0) < 0)
-			(free_split(args), error_exit(WAITPID));
-		if (WIFEXITED(status) && WIFEXITED(o_status))
-		{
-			close(d_pipe[0]);
-			return (WEXITSTATUS(o_status));
-		}
-	}
-	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 18:43:44 by vscode            #+#    #+#             */
-/*   Updated: 2025/08/07 16:37:18 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/09 15:21:29 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,19 @@
 # define ACCESS "access"
 # define WAITPID "waitpid"
 # define EXECVE "execve"
+# define MALLOC "malloc"
 
-int		input_parent_process(pid_t pid, char **args, char *output_filename,
-			int d_pipe[2]);
+int		output(pid_t pid, char **args, char *output_filename, int d_pipe[2]);
 int		input_child_process(char **args, char *input_filename, int d_pipe[2]);
 int		output_child_process(char **args, char *output_filename, int pipe_in);
 void	error_exit(char *error_target);
 char	**ft_split(const char *str, char c);
 void	free_split(char **args);
 char	*ft_strjoin(const char *str1, const char *str2);
+void	handle_command_path_error(char **args, int has_permission_error);
+char	*build_command_path(char **args);
 
+// ft_printf
 int		ft_printf(const char *input, ...);
 void	ft_putstr_fd(char *s, int fd);
 void	ft_putchar_fd(char c, int fd);
