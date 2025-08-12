@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 19:12:11 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/09 20:54:19 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/12 19:18:08 by vscode           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,38 +31,50 @@ void	error_exit(char *error_target)
 	exit(EXIT_FAILURE);
 }
 
-const char	**get_default_paths(char **envp)
+char	**get_default_paths(char **envp)
 {
-	static const char	*paths[7];
-	int					i;
+	int		i;
+	char	**paths;
 
 	i = 0;
+	paths = NULL;
 	while (envp[i])
 	{
-		// TODO: ここをなおします
-		printf("%s\n", envp[i++]);
+		if (!ft_strncmp(envp[i], "PATH=", 5))
+		{
+			envp[i] = envp[i] + 5;
+			paths = ft_split(envp[i], ':');
+			if (!paths)
+				error_exit(MALLOC);
+			return (paths);
+		}
+		i++;
 	}
-	paths[0] = "/usr/local/sbin/";
-	paths[1] = "/usr/local/bin/";
-	paths[2] = "/usr/sbin/";
-	paths[3] = "/usr/bin/";
-	paths[4] = "/sbin/";
-	paths[5] = "/bin/";
-	paths[6] = NULL;
 	return (paths);
 }
 
 void	handle_command_path_error(char **args, int has_permission_error)
 {
+	char	*str;
+	int		len;
+
 	if (has_permission_error)
 	{
-		ft_printf("%s: Permission denied\n", args[0]);
+		str = ft_strjoin(args[0], ": Permission denied\n");
+		if (!str)
+			error_exit(MALLOC);
+		len = ft_strlen(str);
+		write(2, str, len);
 		free_split(args);
 		exit(126);
 	}
 	else
 	{
-		ft_printf("%s: command not found\n", args[0]);
+		str = ft_strjoin(args[0], ": command not found\n");
+		if (!str)
+			error_exit(MALLOC);
+		len = ft_strlen(str);
+		write(2, str, len);
 		free_split(args);
 		exit(127);
 	}
@@ -70,19 +82,24 @@ void	handle_command_path_error(char **args, int has_permission_error)
 
 char	*build_command_path(char **args, char **envp)
 {
-	char		*command_path;
-	int			i;
-	const char	**paths;
-	int			has_permission_error;
+	char	*slash;
+	char	*command_path;
+	int		i;
+	char	**paths;
+	int		has_permission_error;
 
 	has_permission_error = 0;
 	paths = get_default_paths(envp);
 	i = 0;
-	while (i < 6)
+	while (paths[i])
 	{
-		command_path = ft_strjoin(paths[i], args[0]);
+		slash = ft_strjoin(paths[i], "/");
+		if (!slash)
+			error_exit(MALLOC);
+		command_path = ft_strjoin(slash, args[0]);
 		if (!command_path)
 			error_exit(MALLOC);
+		free(slash);
 		if (access(command_path, X_OK) == 0)
 			break ;
 		if (errno == EACCES)
@@ -90,7 +107,7 @@ char	*build_command_path(char **args, char **envp)
 		free(command_path);
 		i++;
 	}
-	if (i == 6)
+	if (!paths[i])
 		handle_command_path_error(args, has_permission_error);
 	return (command_path);
 }
