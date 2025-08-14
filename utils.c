@@ -6,7 +6,7 @@
 /*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 19:12:11 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/12 19:18:08 by vscode           ###   ########.fr       */
+/*   Updated: 2025/08/14 12:19:53 by vscode           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,34 +23,6 @@ void	free_split(char **args)
 		i++;
 	}
 	free(args);
-}
-
-void	error_exit(char *error_target)
-{
-	perror(error_target);
-	exit(EXIT_FAILURE);
-}
-
-char	**get_default_paths(char **envp)
-{
-	int		i;
-	char	**paths;
-
-	i = 0;
-	paths = NULL;
-	while (envp[i])
-	{
-		if (!ft_strncmp(envp[i], "PATH=", 5))
-		{
-			envp[i] = envp[i] + 5;
-			paths = ft_split(envp[i], ':');
-			if (!paths)
-				error_exit(MALLOC);
-			return (paths);
-		}
-		i++;
-	}
-	return (paths);
 }
 
 void	handle_command_path_error(char **args, int has_permission_error)
@@ -80,26 +52,60 @@ void	handle_command_path_error(char **args, int has_permission_error)
 	}
 }
 
+char	**get_default_paths(char **envp)
+{
+	int		i;
+	char	**paths;
+
+	i = 0;
+	paths = NULL;
+	while (envp[i])
+	{
+		if (!ft_strncmp(envp[i], "PATH=", 5))
+		{
+			envp[i] = envp[i] + 5;
+			paths = ft_split(envp[i], ':');
+			if (!paths)
+				error_exit(MALLOC);
+			return (paths);
+		}
+		i++;
+	}
+	return (paths);
+}
+
+char	*pathjoin(const char *path1, const char *path2)
+{
+	char	*with_slash;
+	char	*full_path;
+
+	with_slash = ft_strjoin(path1, "/");
+	if (!with_slash)
+		error_exit(MALLOC);
+	full_path = ft_strjoin(with_slash, path2);
+	if (!full_path)
+		error_exit(MALLOC);
+	free(with_slash);
+	return (full_path);
+}
+
 char	*build_command_path(char **args, char **envp)
 {
-	char	*slash;
 	char	*command_path;
 	int		i;
 	char	**paths;
 	int		has_permission_error;
 
+	if (args[0][0] == '/')
+		return (args[0]);
 	has_permission_error = 0;
 	paths = get_default_paths(envp);
 	i = 0;
-	while (paths[i])
+	while (paths && paths[i])
 	{
-		slash = ft_strjoin(paths[i], "/");
-		if (!slash)
-			error_exit(MALLOC);
-		command_path = ft_strjoin(slash, args[0]);
+		command_path = pathjoin(paths[i], args[0]);
 		if (!command_path)
 			error_exit(MALLOC);
-		free(slash);
 		if (access(command_path, X_OK) == 0)
 			break ;
 		if (errno == EACCES)
@@ -107,7 +113,7 @@ char	*build_command_path(char **args, char **envp)
 		free(command_path);
 		i++;
 	}
-	if (!paths[i])
+	if (!paths || !paths[i])
 		handle_command_path_error(args, has_permission_error);
 	return (command_path);
 }
