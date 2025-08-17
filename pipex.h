@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 18:43:44 by vscode            #+#    #+#             */
-/*   Updated: 2025/08/14 12:39:23 by vscode           ###   ########.fr       */
+/*   Updated: 2025/08/17 14:26:23 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ void	error_exit(char *error_target);
 char	**ft_split(const char *str, char c);
 void	free_split(char **args);
 char	*ft_strjoin(const char *str1, const char *str2);
-void	handle_command_path_error(char **args, int has_permission_error);
+void	handle_command_path_error(char **args, int has_permission_error,
+			char **paths);
 char	*build_command_path(char **args, char **envp);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
 size_t	ft_strlen(const char *s);

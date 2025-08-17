@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 19:12:11 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/14 12:19:53 by vscode           ###   ########.fr       */
+/*   Updated: 2025/08/17 14:44:25 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,31 +25,28 @@ void	free_split(char **args)
 	free(args);
 }
 
-void	handle_command_path_error(char **args, int has_permission_error)
+void	handle_command_path_error(char **args, int has_permission_error,
+		char **paths)
 {
 	char	*str;
 	int		len;
 
 	if (has_permission_error)
-	{
 		str = ft_strjoin(args[0], ": Permission denied\n");
-		if (!str)
-			error_exit(MALLOC);
-		len = ft_strlen(str);
-		write(2, str, len);
-		free_split(args);
-		exit(126);
-	}
 	else
-	{
 		str = ft_strjoin(args[0], ": command not found\n");
-		if (!str)
-			error_exit(MALLOC);
-		len = ft_strlen(str);
-		write(2, str, len);
-		free_split(args);
+	if (!str)
+		error_exit(MALLOC);
+	len = ft_strlen(str);
+	write(2, str, len);
+	if (paths)
+		free_split(paths);
+	free(str);
+	free_split(args);
+	if (has_permission_error)
+		exit(126);
+	else
 		exit(127);
-	}
 }
 
 char	**get_default_paths(char **envp)
@@ -101,9 +98,10 @@ char	*build_command_path(char **args, char **envp)
 	has_permission_error = 0;
 	paths = get_default_paths(envp);
 	i = 0;
+	command_path = NULL;
 	while (paths && paths[i])
 	{
-		command_path = pathjoin(paths[i], args[0]);
+		command_path = pathjoin(paths[i++], args[0]);
 		if (!command_path)
 			error_exit(MALLOC);
 		if (access(command_path, X_OK) == 0)
@@ -111,9 +109,8 @@ char	*build_command_path(char **args, char **envp)
 		if (errno == EACCES)
 			has_permission_error = 1;
 		free(command_path);
-		i++;
 	}
-	if (!paths || !paths[i])
-		handle_command_path_error(args, has_permission_error);
+	if (!paths || !paths[i] || !command_path)
+		handle_command_path_error(args, has_permission_error, paths);
 	return (command_path);
 }
