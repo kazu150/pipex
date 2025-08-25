@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 19:12:11 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/17 14:44:25 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/25 12:37:02 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,9 @@ void	handle_command_path_error(char **args, int has_permission_error,
 	char	*str;
 	int		len;
 
-	if (has_permission_error)
+	if (args[0] == NULL)
+		str = ft_strjoin("", ": command not found\n");
+	else if (has_permission_error)
 		str = ft_strjoin(args[0], ": Permission denied\n");
 	else
 		str = ft_strjoin(args[0], ": command not found\n");
@@ -93,7 +95,7 @@ char	*build_command_path(char **args, char **envp)
 	char	**paths;
 	int		has_permission_error;
 
-	if (args[0][0] == '/')
+	if (args[0][0] == '/' || args[0][0] == '.')
 		return (args[0]);
 	has_permission_error = 0;
 	paths = get_default_paths(envp);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   output.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:18:32 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/14 12:39:36 by vscode           ###   ########.fr       */
+/*   Updated: 2025/08/25 12:37:07 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ int	output_child_process(char **argv, int pipe_in, char **envp)
 	char		*output_filename;
 
 	args = ft_split(argv[3], ' ');
+	if (args[0] == NULL)
+		handle_command_path_error(args, 0, 0);
 	if (!args)
 		error_exit(MALLOC);
 	output_filename = argv[4];
@@ -35,7 +37,7 @@ int	output_child_process(char **argv, int pipe_in, char **envp)
 		(free(cmd), free_split(args), error_exit(DUP2));
 	close(fd);
 	if (execve(cmd, args, environ) == -1)
-		execve_error_exit(cmd);
+		(free(args), execve_error_exit(cmd));
 	return (0);
 }
 

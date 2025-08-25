@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 23:16:06 by vscode            #+#    #+#             */
-/*   Updated: 2025/08/14 12:39:09 by vscode           ###   ########.fr       */
+/*   Updated: 2025/08/25 12:28:08 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ void	execve_error_exit(char *cmd)
 	free(cmd);
 	len = ft_strlen(str);
 	write(2, str, len);
+	free(str);
 	exit(127);
 }
 

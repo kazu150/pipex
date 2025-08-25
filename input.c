@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   input.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:18:46 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/14 12:39:09 by vscode           ###   ########.fr       */
+/*   Updated: 2025/08/25 12:43:01 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,16 @@ int	input_child_process(char **argv, int d_pipe[2], char **envp)
 	char		*cmd;
 	extern char	**environ;
 	char		**args;
-	char		*input_file;
 
 	args = ft_split(argv[2], ' ');
+	if (args[0] == NULL)
+		handle_command_path_error(args, 0, 0);
 	if (!args)
 		error_exit(MALLOC);
 	close(d_pipe[0]);
-	input_file = argv[1];
-	fd = open(input_file, O_RDONLY);
+	fd = open(argv[1], O_RDONLY);
 	if (fd == -1)
-		(free_split(args), error_exit(input_file));
+		(free_split(args), error_exit(argv[1]));
 	cmd = build_command_path(args, envp);
 	if (dup2(fd, STDIN_FILENO) == -1)
 		(free(cmd), free_split(args), error_exit(DUP2));
@@ -36,6 +36,6 @@ int	input_child_process(char **argv, int d_pipe[2], char **envp)
 		(free(cmd), free_split(args), error_exit(DUP2));
 	close(d_pipe[1]);
 	if (execve(cmd, args, environ) == -1)
-		execve_error_exit(cmd);
+		(free(args), execve_error_exit(cmd));
 	return (0);
 }
