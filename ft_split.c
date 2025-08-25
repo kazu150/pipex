@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 14:45:29 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/25 11:56:33 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/25 17:36:29 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,14 @@ static int	free_strs(char **strs, int count)
 	return (0);
 }
 
+int	is_quote(char c)
+{
+	if (c == '\'' || c == '\"')
+		return (1);
+	else
+		return (0);
+}
+
 static void	copy_word(int word_length, char *strs, const char *str, int i)
 {
 	int	k;
@@ -55,6 +63,11 @@ static void	copy_word(int word_length, char *strs, const char *str, int i)
 	k = 0;
 	while (k < word_length)
 	{
+		if (is_quote(str[i]))
+		{
+			i++;
+			continue ;
+		}
 		strs[k] = str[i];
 		k++;
 		i++;
@@ -65,24 +78,32 @@ static void	copy_word(int word_length, char *strs, const char *str, int i)
 static int	split_words(char **strs, const char *str, int str_length, char c)
 {
 	int	i;
-	int	word_length;
+	int	word_len;
 	int	j;
+	int	inside_quote;
 
 	i = 0;
 	j = 0;
+	inside_quote = 0;
 	while (i < str_length)
 	{
-		word_length = 0;
-		while (str[word_length + i] && str[word_length + i] != c)
-			word_length++;
-		if (word_length > 0)
+		word_len = 0;
+		while ((str[word_len + i] && str[word_len + i] != c) || inside_quote)
 		{
-			strs[j] = malloc(sizeof(char) * (word_length + 1));
+			word_len++;
+			if (!inside_quote && is_quote(str[word_len + i]))
+				inside_quote = 1;
+			if (inside_quote && is_quote(str[word_len + i]))
+				inside_quote = 0;
+		}
+		if (word_len > 0)
+		{
+			strs[j] = malloc(sizeof(char) * (word_len + 1));
 			if (strs[j] == NULL)
 				return (free_strs(strs, j));
-			copy_word(word_length, strs[j], str, i);
+			copy_word(word_len, strs[j], str, i);
 			j++;
-			i += word_length;
+			i += word_len;
 		}
 		else
 			i++;
@@ -110,4 +131,12 @@ char	**ft_split(const char *str, char c)
 	if (!has_no_error)
 		return (NULL);
 	return (dest);
+}
+
+int	main(void)
+{
+	char *hoge = "aiueo 'a bc'";
+	char **words = ft_split(hoge, ' ');
+	printf("%s\n", words[0]);
+	printf("%s\n", words[1]);
 }
