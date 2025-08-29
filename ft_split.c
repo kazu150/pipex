@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 14:45:29 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/29 16:11:26 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/29 16:33:26 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,46 +59,42 @@ static void	copy_word(int word_length, char *strs, const char *str,
 
 static int	split_words(char **strs, const char *str, int str_length, char c)
 {
-	int		i;
-	int		word_len;
-	int		j;
-	int		inside_quote;
-	char	current_quote;
+	t_splt	s;
 
-	i = 0;
-	j = 0;
-	inside_quote = 0;
-	while (i < str_length)
+	s.i = 0;
+	s.j = 0;
+	s.inside_qt = 0;
+	while (s.i < str_length)
 	{
-		current_quote = ' ';
-		word_len = 0;
-		while ((str[word_len + i] && str[word_len + i] != c) || inside_quote)
+		s.current_qt = ' ';
+		s.w_len = 0;
+		while ((str[s.w_len + s.i] && str[s.w_len + s.i] != c) || s.inside_qt)
 		{
-			if (is_quote(str[word_len + i]))
+			if (is_quote(str[s.w_len + s.i]))
 			{
-				if (inside_quote && str[word_len + i] != current_quote)
+				if (s.inside_qt && str[s.w_len + s.i] != s.current_qt)
 				{
-					word_len++;
+					s.w_len++;
 					continue ;
 				}
-				inside_quote = !inside_quote;
-				current_quote = str[word_len + i];
+				s.inside_qt = !s.inside_qt;
+				s.current_qt = str[s.w_len + s.i];
 			}
-			word_len++;
+			s.w_len++;
 		}
-		if (word_len > 0)
+		if (s.w_len > 0)
 		{
-			strs[j] = malloc(sizeof(char) * (word_len + 1));
-			if (strs[j] == NULL)
-				return (free_strs(strs, j));
-			copy_word(word_len, strs[j], &(str[i]), current_quote);
-			j++;
-			i += word_len;
+			strs[s.j] = malloc(sizeof(char) * (s.w_len + 1));
+			if (strs[s.j] == NULL)
+				return (free_strs(strs, s.j));
+			copy_word(s.w_len, strs[s.j], &(str[s.i]), s.current_qt);
+			s.j++;
+			s.i += s.w_len;
 		}
 		else
-			i++;
+			s.i++;
 	}
-	strs[j] = 0;
+	strs[s.j] = 0;
 	return (1);
 }
 

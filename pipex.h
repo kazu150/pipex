@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 18:43:44 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/26 13:53:50 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/29 16:33:31 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,20 +31,29 @@
 # define EXECVE "execve"
 # define MALLOC "malloc"
 
-int		output(pid_t pid, char **argv, int d_pipe[2], char **envp);
-int		input_child_process(char **argv, int d_pipe[2], char **envp);
-int		output_child_process(char **argv, int pipe_in, char **envp);
-void	error_exit(char *error_target);
-char	**ft_split(const char *str, char c);
-void	free_split(char **args);
-char	*ft_strjoin(const char *str1, const char *str2);
-void	handle_command_path_error(char **args, int has_permission_error,
-			char **paths);
-char	*build_command_path(char **args, char **envp);
-int		ft_strncmp(const char *s1, const char *s2, size_t n);
-size_t	ft_strlen(const char *s);
-void	execve_error_exit(char *cmd);
-int		is_quote(char c);
-int		free_strs(char **strs, int count);
+int			output(pid_t pid, char **argv, int d_pipe[2], char **envp);
+int			input_child_process(char **argv, int d_pipe[2], char **envp);
+int			output_child_process(char **argv, int pipe_in, char **envp);
+void		error_exit(char *error_target);
+char		**ft_split(const char *str, char c);
+void		free_split(char **args);
+char		*ft_strjoin(const char *str1, const char *str2);
+void		handle_command_path_error(char **args, int has_permission_error,
+				char **paths);
+char		*build_command_path(char **args, char **envp);
+int			ft_strncmp(const char *s1, const char *s2, size_t n);
+size_t		ft_strlen(const char *s);
+void		execve_error_exit(char *cmd);
+int			is_quote(char c);
+int			free_strs(char **strs, int count);
+
+typedef struct s_splt
+{
+	int		i;
+	int		j;
+	int		w_len;
+	int		inside_qt;
+	char	current_qt;
+}			t_splt;
 
 #endif
