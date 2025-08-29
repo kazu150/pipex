@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 14:45:29 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/29 16:33:26 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/29 16:42:00 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,18 @@ static void	copy_word(int word_length, char *strs, const char *str,
 	strs[k] = 0;
 }
 
-static int	split_words(char **strs, const char *str, int str_length, char c)
+int	create_word(char **strs, const char *str, t_splt s)
+{
+	if (s.w_len == 0)
+		return (1);
+	strs[s.j] = malloc(sizeof(char) * (s.w_len + 1));
+	if (strs[s.j] == NULL)
+		(free_strs(strs, s.j), exit(1));
+	copy_word(s.w_len, strs[s.j], &(str[s.i]), s.current_qt);
+	return (s.w_len);
+}
+
+static void	split_words(char **strs, const char *str, int str_length, char c)
 {
 	t_splt	s;
 
@@ -82,20 +93,11 @@ static int	split_words(char **strs, const char *str, int str_length, char c)
 			}
 			s.w_len++;
 		}
+		s.i += create_word(strs, str, s);
 		if (s.w_len > 0)
-		{
-			strs[s.j] = malloc(sizeof(char) * (s.w_len + 1));
-			if (strs[s.j] == NULL)
-				return (free_strs(strs, s.j));
-			copy_word(s.w_len, strs[s.j], &(str[s.i]), s.current_qt);
 			s.j++;
-			s.i += s.w_len;
-		}
-		else
-			s.i++;
 	}
 	strs[s.j] = 0;
-	return (1);
 }
 
 char	**ft_split(const char *str, char c)
@@ -103,7 +105,6 @@ char	**ft_split(const char *str, char c)
 	int		strs_count;
 	char	**dest;
 	int		i;
-	int		has_no_error;
 
 	strs_count = 1;
 	i = 0;
@@ -113,9 +114,7 @@ char	**ft_split(const char *str, char c)
 	dest = malloc(sizeof(char *) * (strs_count + 1));
 	if (dest == NULL)
 		return (NULL);
-	has_no_error = split_words(dest, str, i, c);
-	if (!has_no_error)
-		return (NULL);
+	split_words(dest, str, i, c);
 	return (dest);
 }
 
