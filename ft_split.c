@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 14:45:29 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/26 15:10:17 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/29 16:01:24 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ static int	split_words(char **strs, const char *str, int str_length, char c)
 		word_len = 0;
 		while ((str[word_len + i] && str[word_len + i] != c) || inside_quote)
 		{
-			word_len++;
 			if (is_quote(str[word_len + i]))
 			{
 				if (inside_quote && str[word_len + i] != current_quote)
@@ -82,6 +81,7 @@ static int	split_words(char **strs, const char *str, int str_length, char c)
 				inside_quote = !inside_quote;
 				current_quote = str[word_len + i];
 			}
+			word_len++;
 		}
 		if (word_len > 0)
 		{
@@ -124,18 +124,18 @@ char	**ft_split(const char *str, char c)
 
 // int	main(void)
 // {
-// 	const char	*hoge = "a'b\"\"\"\"\"\"\"\"\"c' d\"''\"ef";
+// 	const char	*hoge = "echo 'aaa'";
 // 	char		**res;
-// 	const char	*hoge1 = "abc          def";
-// 	const char	*hoge2 = "abc'          'def";
 
+// 	// const char	*hoge1 = "abc          'def'";
+// 	// const char	*hoge2 = "abc'          'def";
 // 	res = ft_split(hoge, ' ');
 // 	printf("%s\n", res[0]);
 // 	printf("%s\n", res[1]);
-// 	res = ft_split(hoge1, ' ');
-// 	printf("%s\n", res[0]);
-// 	printf("%s\n", res[1]);
-// 	res = ft_split(hoge2, ' ');
-// 	printf("%s\n", res[0]);
-// 	printf("%s\n", res[1]);
+// 	// res = ft_split(hoge1, ' ');
+// 	// printf("%s\n", res[0]);
+// 	// printf("%s\n", res[1]);
+// 	// res = ft_split(hoge2, ' ');
+// 	// printf("%s\n", res[0]);
+// 	// printf("%s\n", res[1]);
 // }
