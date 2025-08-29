@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 14:45:29 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/29 16:01:24 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/29 16:11:26 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,10 @@ static int	split_words(char **strs, const char *str, int str_length, char c)
 			if (is_quote(str[word_len + i]))
 			{
 				if (inside_quote && str[word_len + i] != current_quote)
+				{
+					word_len++;
 					continue ;
+				}
 				inside_quote = !inside_quote;
 				current_quote = str[word_len + i];
 			}
@@ -124,7 +127,7 @@ char	**ft_split(const char *str, char c)
 
 // int	main(void)
 // {
-// 	const char	*hoge = "echo 'aaa'";
+// 	const char	*hoge = "echo 'a\"aa'";
 // 	char		**res;
 
 // 	// const char	*hoge1 = "abc          'def'";
