@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 18:43:44 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/29 16:33:31 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/30 17:40:18 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ char		*build_command_path(char **args, char **envp);
 int			ft_strncmp(const char *s1, const char *s2, size_t n);
 size_t		ft_strlen(const char *s);
 void		execve_error_exit(char *cmd);
-int			is_quote(char c);
+int			is_qt(char c);
 int			free_strs(char **strs, int count);
 
 typedef struct s_splt

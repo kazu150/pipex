@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 14:45:29 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/29 16:42:00 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/30 17:49:45 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static void	copy_word(int word_length, char *strs, const char *str,
 		word_length -= 2;
 	while (k < word_length)
 	{
-		if (is_quote(str[i]) && str[i] == current_quote)
+		if (is_qt(str[i]) && str[i] == current_quote)
 		{
 			i++;
 			continue ;
@@ -71,6 +71,7 @@ int	create_word(char **strs, const char *str, t_splt s)
 static void	split_words(char **strs, const char *str, int str_length, char c)
 {
 	t_splt	s;
+	int		idx;
 
 	s.i = 0;
 	s.j = 0;
@@ -81,15 +82,11 @@ static void	split_words(char **strs, const char *str, int str_length, char c)
 		s.w_len = 0;
 		while ((str[s.w_len + s.i] && str[s.w_len + s.i] != c) || s.inside_qt)
 		{
-			if (is_quote(str[s.w_len + s.i]))
+			idx = s.w_len + s.i;
+			if (is_qt(str[idx]) && !(s.inside_qt && str[idx] != s.current_qt))
 			{
-				if (s.inside_qt && str[s.w_len + s.i] != s.current_qt)
-				{
-					s.w_len++;
-					continue ;
-				}
 				s.inside_qt = !s.inside_qt;
-				s.current_qt = str[s.w_len + s.i];
+				s.current_qt = str[idx];
 			}
 			s.w_len++;
 		}

@@ -6,7 +6,7 @@
 /*   By: kaisogai <kaisogai@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 13:53:20 by kaisogai          #+#    #+#             */
-/*   Updated: 2025/08/26 13:54:16 by kaisogai         ###   ########.fr       */
+/*   Updated: 2025/08/30 17:40:18 by kaisogai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	free_strs(char **strs, int count)
 	return (0);
 }
 
-int	is_quote(char c)
+int	is_qt(char c)
 {
 	if (c == '\'' || c == '\"')
 		return (1);
